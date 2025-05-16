@@ -18,7 +18,7 @@ const menuItems = [
   {
     label: "Manage projects",
     icon: <FileText className="w-4 h-4" />,
-    href: "/projects",
+    href: "/manage",
   },
 ];
 
