@@ -2,7 +2,15 @@
 
 import DashNav from "../components/dashnav";
 import Sidebar from "../components/sidebar";
-import { LayoutDashboard, PlusCircle, FileText } from "lucide-react";
+import {
+  LayoutDashboard,
+  PlusCircle,
+  FileText,
+  Plus,
+  Gem,
+  User,
+  HelpCircle,
+} from "lucide-react";
 
 const menuItems = [
   {
@@ -22,13 +30,19 @@ const menuItems = [
   },
 ];
 
+const otherItems = [
+  { label: "Premium", icon: <Gem className="w-4 h-4" />, href: "/premium" },
+  { label: "Account", icon: <User className="w-4 h-4" />, href: "/account" },
+  { label: "Help", icon: <HelpCircle className="w-4 h-4" />, href: "/help" },
+];
+
 export default function dashboard() {
   return (
     <>
       <div className="absolute min-w-screen">
         <DashNav title="Dashboard" />
       </div>
-      <Sidebar active="Dashboard" menuItems={menuItems} />
+      <Sidebar active="Dashboard" menuItems={menuItems} otherItems={otherItems} />
     </>
   );
 }

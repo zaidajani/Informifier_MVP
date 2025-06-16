@@ -11,7 +11,7 @@ interface DashNavProps {
 export default function DashNav({ title }: DashNavProps) {
   return (
     <div className="w-full flex items-center justify-between border-b-[0.5px] border-[#C8CBD9] h-21">
-      <h2 className={`text-[#5A67BA] text-sm font-bold ml-[330px] ${PoppinsFontBold.className}`}>
+      <h2 className={`text-[#5A67BA] text-sm font-bold ml-[280px] ${PoppinsFontBold.className}`}>
         {title}
       </h2>
       <div className="flex items-center space-x-6 mr-12">

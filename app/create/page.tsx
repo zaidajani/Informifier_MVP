@@ -5,7 +5,15 @@ import Sidebar from "../components/sidebar";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { Poppins } from "next/font/google";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, PlusCircle, FileText, Plus } from "lucide-react";
+import {
+  LayoutDashboard,
+  PlusCircle,
+  FileText,
+  Plus,
+  Gem,
+  User,
+  HelpCircle,
+} from "lucide-react";
 
 const PoppinsFontBold = Poppins({ weight: "700", subsets: ["latin"] });
 const PoppinsFontMedium = Poppins({ weight: "400", subsets: ["latin"] });
@@ -26,6 +34,12 @@ const menuItems = [
     icon: <FileText className="w-4 h-4" />,
     href: "/manage",
   },
+];
+
+const otherItems = [
+  { label: "Premium", icon: <Gem className="w-4 h-4" />, href: "/premium" },
+  { label: "Account", icon: <User className="w-4 h-4" />, href: "/account" },
+  { label: "Help", icon: <HelpCircle className="w-4 h-4" />, href: "/help" },
 ];
 
 export default function dashboard() {
@@ -68,7 +82,7 @@ export default function dashboard() {
         <DashNav title="Create a new project" />
       </div>
       <div className="flex flex-row">
-        <Sidebar active="Create project" menuItems={menuItems} />
+        <Sidebar active="Create project" menuItems={menuItems} otherItems={otherItems} />
         <div className="p-8 mt-30">
           <h2
             className={`text-[#5A67BA] text-xs font-semibold ${PoppinsFontBold.className}`}
