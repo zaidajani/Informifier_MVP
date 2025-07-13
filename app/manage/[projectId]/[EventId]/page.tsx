@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Poppins } from "next/font/google";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 // @ts-ignore
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 // @ts-ignore
@@ -24,14 +24,11 @@ const PoppinsFontMedium = Poppins({ weight: "400", subsets: ["latin"] });
 
 function formatDate(rawDate: string): string {
   const date = new Date(rawDate);
-
   const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-indexed
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
-
   return `${day}/${month}/${year} @ ${hours}:${minutes}`;
 }
 
@@ -117,16 +114,22 @@ const ManageEvent = () => {
   const [message, setMessage] = useState("");
   const [service, setService] = useState("");
   const [events, setEvents] = useState<NotificationCardProps[]>([]);
+  const [eventData, setEventData] = useState<any>({});
   const { getToken } = useAuth();
 
-  // Load saved local inputs
+  // Load localStorage values
   useEffect(() => {
-    setUsername(localStorage.getItem(`event_${eventId}_username`) || "");
-    setMessage(localStorage.getItem(`event_${eventId}_message`) || "");
-    setService(localStorage.getItem(`event_${eventId}_service`) || "");
-  }, []);
+    if (!eventId) return;
+    const savedUsername = localStorage.getItem(`event_${eventId}_username`) || "";
+    const savedMessage = localStorage.getItem(`event_${eventId}_message`) || "";
+    const savedService = localStorage.getItem(`event_${eventId}_service`) || "";
+    const validServices = ["discord"]; // only allowed service
+    setUsername(savedUsername);
+    setMessage(savedMessage);
+    setService(validServices.includes(savedService) ? savedService : "");
+  }, [eventId]);
 
-  // Fetch events from API
+  // Fetch event occurrences
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -143,8 +146,9 @@ const ManageEvent = () => {
         if (!res.ok) throw new Error("Failed to fetch events");
 
         const data = await res.json();
-
+        console.log(data);
         if (Array.isArray(data.eventOccurred)) {
+          setEventData(data.event);
           setEvents(
             data.eventOccurred.map((e: any) => ({
               title: e.message || "Event occurred",
@@ -152,7 +156,6 @@ const ManageEvent = () => {
             }))
           );
         } else {
-          console.warn("No events found in response:", data);
           setEvents([]);
         }
       } catch (err) {
@@ -187,24 +190,16 @@ const ManageEvent = () => {
         />
         <div className="min-h-screen border-r-[0.5px] border-[#C8CBD9] w-[310px] p-8">
           <div className="max-h-[80vh] mt-20 overflow-y-scroll [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            <h2
-              className={`text-sm text-[#5A67BA] mt-8 ${PoppinsFontBold.className}`}
-            >
+            <h2 className={`text-sm text-[#5A67BA] mt-8 ${PoppinsFontBold.className}`}>
               Event info
             </h2>
-            <h2
-              className={`text-sm text-[#5A67BA] mt-8 ${PoppinsFontBold.className}`}
-            >
-              User registration event
+            <h2 className={`text-sm text-[#5A67BA] mt-8 ${PoppinsFontBold.className}`}>
+              {eventData.name}
             </h2>
-            <h2
-              className={`text-sm text-[#5A67BA] mt-5 ${PoppinsFontMedium.className}`}
-            >
-              Gives a notification whenever a user signs up to my app.
+            <h2 className={`text-sm text-[#5A67BA] mt-5 ${PoppinsFontMedium.className}`}>
+              {eventData.description}
             </h2>
-            <h2
-              className={`text-sm text-[#5A67BA] mt-7 ${PoppinsFontMedium.className}`}
-            >
+            <h2 className={`text-sm text-[#5A67BA] mt-7 ${PoppinsFontMedium.className}`}>
               Change event type
             </h2>
             <select
@@ -213,22 +208,17 @@ const ManageEvent = () => {
               onChange={(e) => setService(e.target.value)}
             >
               <option value="">-- Choose service --</option>
-              <option value="whatsapp">WhatsApp</option>
               <option value="discord">Discord</option>
-              <option value="email">Email</option>
+              <option value="whatsapp" disabled>WhatsApp</option>
+              <option value="email" disabled>Email</option>
             </select>
             <div className="mt-7">
               <DiscordSvg width={58} height={58} />
             </div>
-            <h2
-              className={`text-sm text-[#5A67BA] mt-5 ${PoppinsFontMedium.className}`}
-            >
-              Event service:{" "}
-              <span className={`${PoppinsFontBold.className}`}>Discord</span>
+            <h2 className={`text-sm text-[#5A67BA] mt-5 ${PoppinsFontMedium.className}`}>
+              Event service: <span className={`${PoppinsFontBold.className}`}>Discord</span>
             </h2>
-            <h2
-              className={`text-sm text-[#818181] mt-7 ${PoppinsFontMedium.className}`}
-            >
+            <h2 className={`text-sm text-[#818181] mt-7 ${PoppinsFontMedium.className}`}>
               Enter username
             </h2>
             <input
@@ -238,9 +228,7 @@ const ManageEvent = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
-            <h2
-              className={`text-sm text-[#818181] mt-7 ${PoppinsFontMedium.className}`}
-            >
+            <h2 className={`text-sm text-[#818181] mt-7 ${PoppinsFontMedium.className}`}>
               Message to be sent
             </h2>
             <textarea
@@ -249,11 +237,6 @@ const ManageEvent = () => {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
-            <div
-              className={`h-10 w-40 bg-[#D7FFE9] flex items-center justify-center rounded-md text-[#818181] text-sm ${PoppinsFontMedium.className} cursor-pointer mt-5`}
-            >
-              Test username
-            </div>
             <div
               className={`h-10 w-full bg-[#D5E4FF] flex items-center justify-center rounded-md text-[#818181] text-sm ${PoppinsFontMedium.className} cursor-pointer mt-5`}
               onClick={() => {
@@ -271,9 +254,7 @@ const ManageEvent = () => {
         {/* Right Panel for Events */}
         <div className="w-[30vw] min-h-screen border-r-[0.5px] border-[#C8CBD9] p-8">
           <div className="max-h-[80vh] mt-20 overflow-y-scroll [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            <h2
-              className={`text-sm text-[#5A67BA] mt-8 ${PoppinsFontBold.className}`}
-            >
+            <h2 className={`text-sm text-[#5A67BA] mt-8 ${PoppinsFontBold.className}`}>
               Occurred events (total {events.length})
             </h2>
             <div className="mt-10">
@@ -288,7 +269,7 @@ const ManageEvent = () => {
           </div>
         </div>
 
-        {/* Right-most Code Panel */}
+        {/* Code Panel */}
         <div className="w-[30vw]">
           <div className="mt-25 p-10">
             <div className="flex justify-end">

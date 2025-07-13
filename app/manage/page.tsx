@@ -8,6 +8,7 @@ import { HexColorPicker } from "react-colorful";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, Fragment, useRef } from "react";
 import { useRouter } from "next/navigation"; // ✅ NEW
+import ManageDashboard from "../components/manageDashboard";
 import {
   LayoutDashboard,
   PlusCircle,
@@ -17,9 +18,8 @@ import {
   User,
   HelpCircle,
   FileBox,
-  ArrowBigLeft
+  ArrowBigLeft,
 } from "lucide-react";
-
 
 const PoppinsFontBold = Poppins({ weight: "700", subsets: ["latin"] });
 const PoppinsFontMedium = Poppins({ weight: "400", subsets: ["latin"] });
@@ -100,19 +100,17 @@ function Dashboard() {
     try {
       const token = await getToken();
       console.log(token);
-      const res = await fetch(
-        `/api/projects/events/${projectId}/${user?.id}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch(`/api/projects/events/${projectId}/${user?.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (res.ok) {
         const data = await res.json();
+        console.log(data);
         setEventsArray(data.events);
       } else {
         console.error("Failed to fetch events data");
@@ -193,7 +191,11 @@ function Dashboard() {
         <DashNav title="Manage Projects" />
       </div>
       <div className="flex flex-row">
-        <Sidebar active="Manage projects" menuItems={menuItems} otherItems={otherItems} />
+        <Sidebar
+          active="Manage projects"
+          menuItems={menuItems}
+          otherItems={otherItems}
+        />
         <div className="min-h-screen border-r-[0.5px] border-[#C8CBD9] w-[260px] p-8">
           <div className="flex flex-col mt-20">
             <h2
@@ -225,16 +227,21 @@ function Dashboard() {
             </div>
           </div>
         </div>
-        <div className="min-h-screen border-r-[0.5px] border-[#C8CBD9] w-[43vw] p-8">
-          <h2
-            className={`text-[#5A67BA] text-s font-semibold mt-20 ${PoppinsFontMedium.className}`}
-          >
-            Project dashboard for{" "}
-            <span className={`${PoppinsFontBold.className}`}>
-              {selected?.name}
-            </span>
-          </h2>
+        <div className="flex flex-row h-[87vh] overflow-y-auto mt-auto  [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="w-[43vw] px-10 mt-4">
+            <h2
+              className={`text-[#5A67BA] text-s font-semibold ${PoppinsFontMedium.className}`}
+            >
+              Project dashboard for{" "}
+              <span className={`${PoppinsFontBold.className}`}>
+                {selected?.name}
+              </span>
+            </h2>
+            <ManageDashboard />
+            <div className="h-30"></div>
+          </div>
         </div>
+        <div className="border-r-[0.5px] border-[#C8CBD9] h-[100vh]" />
         <div className="relative flex overflow-hidden">
           <AnimatePresence mode="wait">
             {newSelect ? (

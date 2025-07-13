@@ -84,7 +84,7 @@ export const GET = async (req: NextRequest) => {
     }
 
     return NextResponse.json(
-      { success: true, eventOccurred: event.eventOccurred },
+      { success: true, eventOccurred: event.eventOccurred, event },
       { status: 200 }
     );
   } catch (err) {
