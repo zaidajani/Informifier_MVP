@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import User from "@/lib/modals/user";
 import connect from "@/lib/db";
 import Project from "@/lib/modals/project";
 
@@ -49,6 +50,15 @@ export const POST = async (
     if (!updatedProject) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
+
+    const user = await User.findOne({ clerkUserId: await params.userId });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    user.events = (user.events || 0) + 1;
+    await user.save();
 
     return NextResponse.json({ success: true, project: updatedProject }, { status: 200 });
   } catch (err) {
