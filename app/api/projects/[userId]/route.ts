@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server"; // ✅ use the server version
 import connect from "@/lib/db";
+import User from "@/lib/modals/user";
 import Project from "@/lib/modals/project";
 
-export const POST = async (req: NextRequest, { params }: { params: { userId: string } }) => {
+export const POST = async (
+  req: NextRequest,
+  { params }: { params: { userId: string } }
+) => {
   const { userId: authUserId } = await auth(); // ✅ await this
 
   if (!authUserId) {
@@ -21,20 +25,42 @@ export const POST = async (req: NextRequest, { params }: { params: { userId: str
     const { projectName, description } = body;
 
     if (!projectName) {
-      return NextResponse.json({ error: "Project name is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Project name is required" },
+        { status: 400 }
+      );
     }
 
     console.log("Received body:", body);
-    const newProject = await Project.create({ name: projectName, userId: authUserId, description });
+    const newProject = await Project.create({
+      name: projectName,
+      userId: authUserId,
+      description,
+    });
 
-    return NextResponse.json({ success: true, project: newProject }, { status: 201 });
+    const user = await User.findOne({ clerkUserId: await params.userId });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    user.projects = (user.projects || 0) + 1;
+    await user.save();
+
+    return NextResponse.json(
+      { success: true, project: newProject },
+      { status: 201 }
+    );
   } catch (err) {
     console.error("Error creating project:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 };
 
-export const GET = async (req: NextRequest, { params }: { params: { userId: string } }) => {
+export const GET = async (
+  req: NextRequest,
+  { params }: { params: { userId: string } }
+) => {
   const { userId: authUserId } = await auth(); // ✅ await here too
 
   if (!authUserId) {

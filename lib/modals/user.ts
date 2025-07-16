@@ -4,10 +4,13 @@ const UserSchema = new Schema(
   {
     clerkUserId: { type: String, required: true, unique: true },
     apikey: { type: String, required: true, unique: true },
-    usages: {type: Number },
-    projects: { type: Number },
+    usages: { type: Number },
+    projects: {
+      type: Number,
+      default: 0,
+    },
     events: { type: Number },
-    Occurrences: { type: Number }
+    Occurrences: { type: Number },
   },
   { timestamps: true }
 );
