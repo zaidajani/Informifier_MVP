@@ -2,16 +2,131 @@
 
 import DashNav from "../components/dashnav";
 import Sidebar from "../components/sidebar";
+import * as React from "react";
 import { Poppins } from "next/font/google";
 import {
   LayoutDashboard,
   PlusCircle,
   FileText,
-  Plus,
   Gem,
   User,
   HelpCircle,
 } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+
+// Sample chart data
+const chartData = [
+  { date: "2024-04-01", desktop: 222 },
+  { date: "2024-04-01", desktop: 222 },
+  { date: "2024-04-01", desktop: 222 },
+  { date: "2024-04-02", desktop: 97  },
+  { date: "2024-04-02", desktop: 97  },
+  { date: "2024-04-02", desktop: 97  },
+  { date: "2024-04-03", desktop: 167 },
+  { date: "2024-04-03", desktop: 167 },
+  { date: "2024-04-03", desktop: 167 },
+  { date: "2024-04-04", desktop: 242 },
+  { date: "2024-04-04", desktop: 242 },
+  { date: "2024-04-04", desktop: 242 },
+  { date: "2024-04-05", desktop: 373 },
+  { date: "2024-04-05", desktop: 373 },
+  { date: "2024-04-05", desktop: 373 },
+  { date: "2024-04-06", desktop: 301 },
+  { date: "2024-04-06", desktop: 301 },
+  { date: "2024-04-06", desktop: 301 },
+  { date: "2024-04-07", desktop: 245 },
+  { date: "2024-04-07", desktop: 245 },
+  { date: "2024-04-07", desktop: 245 },
+  { date: "2024-04-08", desktop: 409 },
+  { date: "2024-04-08", desktop: 409 },
+  { date: "2024-04-08", desktop: 409 },
+  { date: "2024-04-09", desktop: 59  },
+  { date: "2024-04-09", desktop: 59  },
+  { date: "2024-04-09", desktop: 59  },
+  { date: "2024-04-10", desktop: 261 },
+  { date: "2024-04-10", desktop: 261 },
+  { date: "2024-04-10", desktop: 261 },
+  { date: "2024-04-01", desktop: 222 },
+  { date: "2024-04-01", desktop: 222 },
+  { date: "2024-04-01", desktop: 222 },
+  { date: "2024-04-02", desktop: 97  },
+  { date: "2024-04-02", desktop: 97  },
+  { date: "2024-04-02", desktop: 97  },
+  { date: "2024-04-03", desktop: 167 },
+  { date: "2024-04-03", desktop: 167 },
+  { date: "2024-04-03", desktop: 167 },
+  { date: "2024-04-04", desktop: 242 },
+  { date: "2024-04-04", desktop: 242 },
+  { date: "2024-04-04", desktop: 242 },
+  { date: "2024-04-05", desktop: 373 },
+  { date: "2024-04-05", desktop: 373 },
+  { date: "2024-04-05", desktop: 373 },
+  { date: "2024-04-06", desktop: 301 },
+  { date: "2024-04-06", desktop: 301 },
+  { date: "2024-04-06", desktop: 301 },
+  { date: "2024-04-07", desktop: 245 },
+  { date: "2024-04-07", desktop: 245 },
+  { date: "2024-04-07", desktop: 245 },
+  { date: "2024-04-08", desktop: 409 },
+  { date: "2024-04-08", desktop: 409 },
+  { date: "2024-04-08", desktop: 409 },
+  { date: "2024-04-09", desktop: 59  },
+  { date: "2024-04-09", desktop: 59  },
+  { date: "2024-04-09", desktop: 59  },
+  { date: "2024-04-10", desktop: 261 },
+  { date: "2024-04-10", desktop: 261 },
+  { date: "2024-04-10", desktop: 261 },
+  { date: "2024-04-01", desktop: 222 },
+  { date: "2024-04-01", desktop: 222 },
+  { date: "2024-04-01", desktop: 222 },
+  { date: "2024-04-02", desktop: 97  },
+  { date: "2024-04-02", desktop: 97  },
+  { date: "2024-04-02", desktop: 97  },
+  { date: "2024-04-03", desktop: 167 },
+  { date: "2024-04-03", desktop: 167 },
+  { date: "2024-04-03", desktop: 167 },
+  { date: "2024-04-04", desktop: 242 },
+  { date: "2024-04-04", desktop: 242 },
+  { date: "2024-04-04", desktop: 242 },
+  { date: "2024-04-05", desktop: 373 },
+  { date: "2024-04-05", desktop: 373 },
+  { date: "2024-04-05", desktop: 373 },
+  { date: "2024-04-06", desktop: 301 },
+  { date: "2024-04-06", desktop: 301 },
+  { date: "2024-04-06", desktop: 301 },
+  { date: "2024-04-07", desktop: 245 },
+  { date: "2024-04-07", desktop: 245 },
+  { date: "2024-04-07", desktop: 245 },
+  { date: "2024-04-08", desktop: 409 },
+  { date: "2024-04-08", desktop: 409 },
+  { date: "2024-04-08", desktop: 409 },
+  { date: "2024-04-09", desktop: 59  },
+  { date: "2024-04-09", desktop: 59  },
+  { date: "2024-04-09", desktop: 59  },
+  { date: "2024-04-10", desktop: 261 },
+  { date: "2024-04-10", desktop: 261 },
+  { date: "2024-04-10", desktop: 261 },
+];
+
+const chartConfig = {
+  desktop: {
+    label: "Desktop",
+    color: "#5967BA",
+  },
+} satisfies ChartConfig;
 
 const PoppinsFontBold = Poppins({ weight: "700", subsets: ["latin"] });
 const PoppinsFontMedium = Poppins({ weight: "400", subsets: ["latin"] });
@@ -42,9 +157,15 @@ const otherItems = [
 ];
 
 export default function dashboard() {
+  const activeChart: keyof typeof chartConfig = "desktop";
+
+  const total = {
+    desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
+  };
+
   return (
     <>
-      <div className="absolute min-w-screen">
+      <div className="absolute w-full">
         <DashNav title="Dashboard" />
       </div>
       <div className="flex flex-row">
@@ -53,36 +174,143 @@ export default function dashboard() {
           menuItems={menuItems}
           otherItems={otherItems}
         />
-        <div className="flex flex-row gap-8">
-          <div className="flex flex-col mt-40 ml-15">
-            <div className={`h-25 w-45 bg-[#EFEFEF] flex items-center justify-center text-4xl rounded-xl text-[#5A67BA] ${PoppinsFontRegular.className}`}>
-              23
+        <div className="flex flex-col">
+          <div className="flex flex-row gap-8">
+            <div className="flex flex-col mt-40 ml-15">
+              <div
+                className={`h-25 w-45 bg-[#EFEFEF] flex items-center justify-center text-4xl rounded-xl text-[#5A67BA] ${PoppinsFontRegular.className}`}
+              >
+                23
+              </div>
+              <p
+                className={`mt-10 text-md ${PoppinsFontMedium.className} text-[#132283]`}
+              >
+                Events Occurred <br /> Today
+              </p>
             </div>
-            <p className={`mt-10 text-md ${PoppinsFontMedium.className} text-[#132283]`}>Events Occurred <br /> Today</p>
+            <div className="flex flex-col mt-40">
+              <div
+                className={`h-25 w-45 bg-[#EFEFEF] flex items-center justify-center text-4xl rounded-xl text-[#5A67BA] ${PoppinsFontRegular.className}`}
+              >
+                223
+              </div>
+              <p
+                className={`mt-10 text-md ${PoppinsFontMedium.className} text-[#132283]`}
+              >
+                Total events
+                <br /> Occurred
+              </p>
+            </div>
+            <div className="flex flex-col mt-40">
+              <div
+                className={`h-25 w-45 bg-[#EFEFEF] flex items-center justify-center text-4xl rounded-xl text-[#5A67BA] ${PoppinsFontRegular.className}`}
+              >
+                1
+              </div>
+              <p
+                className={`mt-10 text-md ${PoppinsFontMedium.className} text-[#132283]`}
+              >
+                Total projects
+              </p>
+            </div>
+            <div className="flex flex-col mt-40">
+              <div
+                className={`h-25 w-45 bg-[#EFEFEF] flex items-center justify-center text-4xl rounded-xl text-[#5A67BA] ${PoppinsFontRegular.className}`}
+              >
+                3
+              </div>
+              <p
+                className={`mt-10 text-md ${PoppinsFontMedium.className} text-[#132283]`}
+              >
+                Total events
+              </p>
+            </div>
+            <div className="flex flex-col mt-40">
+              <div
+                className={`h-25 w-45 bg-[#EFEFEF] flex items-center justify-center text-4xl rounded-xl text-[#5A67BA] ${PoppinsFontRegular.className} cursor-pointer`}
+              >
+                Doc
+              </div>
+              <p
+                className={`mt-10 text-md ${PoppinsFontMedium.className} text-[#132283]`}
+              >
+                Search <br />
+                Documentation
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col mt-40">
-            <div className={`h-25 w-45 bg-[#EFEFEF] flex items-center justify-center text-4xl rounded-xl text-[#5A67BA] ${PoppinsFontRegular.className}`}>
-              223
-            </div>
-            <p className={`mt-10 text-md ${PoppinsFontMedium.className} text-[#132283]`}>Total events<br /> Occurred</p>
-          </div>
-          <div className="flex flex-col mt-40">
-            <div className={`h-25 w-45 bg-[#EFEFEF] flex items-center justify-center text-4xl rounded-xl text-[#5A67BA] ${PoppinsFontRegular.className}`}>
-              1
-            </div>
-            <p className={`mt-10 text-md ${PoppinsFontMedium.className} text-[#132283]`}>Total projects</p>
-          </div>
-          <div className="flex flex-col mt-40">
-            <div className={`h-25 w-45 bg-[#EFEFEF] flex items-center justify-center text-4xl rounded-xl text-[#5A67BA] ${PoppinsFontRegular.className}`}>
-              3
-            </div>
-            <p className={`mt-10 text-md ${PoppinsFontMedium.className} text-[#132283]`}>Total events</p>
-          </div>
-          <div className="flex flex-col mt-40">
-            <div className={`h-25 w-45 bg-[#EFEFEF] flex items-center justify-center text-4xl rounded-xl text-[#5A67BA] ${PoppinsFontRegular.className} cursor-pointer`}>
-              Doc
-            </div>
-            <p className={`mt-10 text-md ${PoppinsFontMedium.className} text-[#132283]`}>Search <br />Documentation</p>
+          <div className="mt-20 ml-15">
+            <Card>
+              <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+                <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
+                  <CardTitle>Events Occurred</CardTitle>
+                  <CardDescription>
+                    No of events occurred every day (last 30 days)
+                  </CardDescription>
+                </div>
+                <div className="flex">
+                  <div className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left sm:border-l sm:border-t-0 sm:px-8 sm:py-6">
+                    <span className="text-xs text-muted-foreground">
+                      {chartConfig.desktop.label}
+                    </span>
+                    <span className="text-lg font-bold leading-none sm:text-3xl">
+                      {total.desktop.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="px-2 sm:p-6">
+                <ChartContainer
+                  config={chartConfig}
+                  className="aspect-auto h-[250px] w-full"
+                >
+                  <BarChart
+                    accessibilityLayer
+                    data={chartData}
+                    margin={{
+                      left: 12,
+                      right: 12,
+                    }}
+                  >
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey="date"
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                      minTickGap={32}
+                      tickFormatter={(value) => {
+                        const date = new Date(value);
+                        return date.toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        });
+                      }}
+                    />
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          className="w-[150px]"
+                          nameKey="views"
+                          labelFormatter={(value) => {
+                            return new Date(value).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            });
+                          }}
+                        />
+                      }
+                    />
+                    <Bar
+                      dataKey="desktop"
+                      fill="var(--color-desktop)"
+                      radius={0}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
