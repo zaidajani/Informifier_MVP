@@ -31,11 +31,17 @@ import {
 } from "@/components/ui/chart";
 
 const pieChartData = [
-  { browser: "chrome", visitors: 275, fill: "#4285F4" },  // blue
-  { browser: "safari", visitors: 200, fill: "#FF9800" },  // orange
-  { browser: "firefox", visitors: 187, fill: "#FF5722" }, // red-orange
+  { events: "Doc Open", eventsOccurred: 275, fill: "#5967BA" },
+  { events: "Signup", eventsOccurred: 200, fill: "rgba(38, 169, 149, 1)" },
+  { events: "Payment", eventsOccurred: 187, fill: "#a7aed5ff" },
 ];
 
+const pieChartData2 = [
+  { events: "Register", eventsOccurred: 220, fill: "#ffd82bff" },
+  { events: "Login", eventsOccurred: 180, fill: "#ff7f50" },
+  { events: "Logout", eventsOccurred: 120, fill: "#87cefa" },
+  { events: "Error", eventsOccurred: 75, fill: "#da70d6" },
+];
 
 // Sample chart data
 const chartData = [
@@ -139,28 +145,20 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const chartConfigPie = {
-  visitors: {
-    label: "Visitors",
+  eventsOccurred: {
+    label: "Events Occurred",
   },
-  chrome: {
-    label: "Chrome",
+  "Doc Open": {
+    label: "Doc Open",
     color: "hsl(var(--chart-1))",
   },
-  safari: {
-    label: "Safari",
+  Signup: {
+    label: "Signup",
     color: "hsl(var(--chart-2))",
   },
-  firefox: {
-    label: "Firefox",
+  Payment: {
+    label: "Payment",
     color: "hsl(var(--chart-3))",
-  },
-  edge: {
-    label: "Edge",
-    color: "hsl(var(--chart-4))",
-  },
-  other: {
-    label: "Other",
-    color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig;
 
@@ -349,41 +347,80 @@ export default function dashboard() {
             </Card>
           </div>
           <div>
-            <Card className="flex flex-col ml-15 mt-20 h-120 w-100">
-              <CardHeader className="items-center pb-0">
-                <CardTitle>Pie Chart</CardTitle>
-                <CardDescription>January - June 2024</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1 pb-0">
-                <ChartContainer
-                  config={chartConfigPie}
-                  className="mx-auto aspect-square max-h-[250px]"
-                >
-                  <PieChart>
-                    <ChartTooltip
-                      cursor={false}
-                      content={<ChartTooltipContent hideLabel />}
-                    />
-                    <Pie
-                      data={pieChartData}
-                      dataKey="visitors"
-                      nameKey="browser"
-                    />
-                  </PieChart>
-                </ChartContainer>
-              </CardContent>
-              <CardFooter className="flex-col gap-2 text-sm">
-                <div className="flex items-center gap-2 font-medium leading-none">
-                  Trending up by 5.2% this month{" "}
-                  <TrendingUp className="h-4 w-4" />
-                </div>
-                <div className="leading-none text-muted-foreground">
-                  Showing total visitors for the last 6 months
-                </div>
-              </CardFooter>
-            </Card>
+            <div className="flex flex-row">
+              <Card className="flex flex-col ml-15 mt-10 h-120 w-full">
+                <CardHeader className="items-center pb-0">
+                  <CardTitle>Pie Chart</CardTitle>
+                  <CardDescription>January - June 2024</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 pb-0">
+                  <ChartContainer
+                    config={chartConfigPie}
+                    className="mx-auto aspect-square max-h-[250px]"
+                  >
+                    <PieChart>
+                      <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent hideLabel />}
+                      />
+                      <Pie
+                        data={pieChartData}
+                        dataKey="eventsOccurred"
+                        nameKey="events"
+                      />
+                    </PieChart>
+                  </ChartContainer>
+                </CardContent>
+                <CardFooter className="flex-col gap-2 text-sm">
+                  <div className="flex items-center gap-2 font-medium leading-none">
+                    Trending up by 5.2% this month{" "}
+                    <TrendingUp className="h-4 w-4" />
+                  </div>
+                  <div className="leading-none text-muted-foreground">
+                    Showing total visitors for the last 6 months
+                  </div>
+                </CardFooter>
+              </Card>
+              <Card className="flex flex-col ml-10 mt-10 h-120 w-full">
+                <CardHeader className="items-center pb-0">
+                  <CardTitle>Pie Chart</CardTitle>
+                  <CardDescription>January - June 2024</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 pb-0">
+                  <ChartContainer
+                    config={chartConfigPie}
+                    className="mx-auto aspect-square max-h-[250px]"
+                  >
+                    <PieChart>
+                      <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent hideLabel />}
+                      />
+                      <Pie
+                        data={pieChartData2}
+                        dataKey="eventsOccurred"
+                        nameKey="events"
+                      />
+                    </PieChart>
+                  </ChartContainer>
+                </CardContent>
+                <CardFooter className="flex-col gap-2 text-sm">
+                  <div className="flex items-center gap-2 font-medium leading-none">
+                    Trending up by 5.2% this month{" "}
+                    <TrendingUp className="h-4 w-4" />
+                  </div>
+                  <div className="leading-none text-muted-foreground">
+                    Showing total visitors for the last 6 months
+                  </div>
+                </CardFooter>
+              </Card>
+            </div>
             <br />
-            <br /><br /><br /><br /><br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
           </div>
         </div>
       </div>
