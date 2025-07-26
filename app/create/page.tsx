@@ -45,7 +45,7 @@ const otherItems = [
 export default function dashboard() {
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
-  const [message, setMessage] = useState(""); 
+  const [message, setMessage] = useState("");
   const { user } = useUser();
   const { getToken } = useAuth();
 
@@ -66,12 +66,12 @@ export default function dashboard() {
     // const data = await res.json();
 
     if (res.ok) {
-      setProjectName('');
-      setDescription('');
+      setProjectName("");
+      setDescription("");
       setMessage(`✅ Project created`);
     } else {
-      setProjectName('');
-      setDescription('');
+      setProjectName("");
+      setDescription("");
       setMessage(`❌ Error`);
     }
   };
@@ -82,39 +82,47 @@ export default function dashboard() {
         <DashNav title="Create a new project" />
       </div>
       <div className="flex flex-row">
-        <Sidebar active="Create project" menuItems={menuItems} otherItems={otherItems} />
-        <div className="p-8 mt-30">
-          <h2
-            className={`text-[#5A67BA] text-xs font-semibold ${PoppinsFontBold.className}`}
-          >
-            Create project
-          </h2>
+        <div className="flex flex-row">
+          <Sidebar
+            active="Create project"
+            menuItems={menuItems}
+            otherItems={otherItems}
+          />
+          <div className="p-8 mt-30">
+            <h2
+              className={`text-[#5A67BA] text-xs font-semibold ${PoppinsFontBold.className}`}
+            >
+              Create project
+            </h2>
 
-          <div
-            className={`max-w-md space-y-3 mt-12 ${PoppinsFontMedium.className}`}
-          >
-            <p className="">{message}</p>
-            <input
-              type="text"
-              placeholder="Name of the project"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              className="mt-5 w-full px-3 py-2 rounded-md bg-gray-100 text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+            <div
+              className={`max-w-md space-y-3 mt-12 ${PoppinsFontMedium.className}`}
+            >
+              <p className="">{message}</p>
+              <input
+                type="text"
+                placeholder="Name of the project"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                className="mt-5 w-[44vw] px-3 py-2 rounded-md bg-gray-100 text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
 
-            <input
-              type="text"
-              placeholder="Description (optional)"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 rounded-md bg-gray-100 text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+              <textarea
+                placeholder="Description (optional)"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-[44vw] h-40 px-3 py-2 rounded-md bg-gray-100 text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
 
-            {/* Create Button */}
-            <button className="flex items-center space-x-1.5 px-4 py-2 rounded-md bg-indigo-100 text-indigo-600 hover:bg-indigo-200 text-sm transition cursor-pointer mt-5" onClick={handleCreateProject}>
-              <Plus className="w-4 h-4" />
-              <span>Create project</span>
-            </button>
+              {/* Create Button */}
+              <button
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-md bg-indigo-100 text-indigo-600 hover:bg-indigo-200 text-sm transition cursor-pointer mt-5"
+                onClick={handleCreateProject}
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create project</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
