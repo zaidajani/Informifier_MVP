@@ -19,6 +19,27 @@ import { useState, useEffect } from "react";
 const PoppinsFontBold = Poppins({ weight: "700", subsets: ["latin"] });
 const PoppinsFontMedium = Poppins({ weight: "400", subsets: ["latin"] });
 
+interface NotificationCardProps {
+  title: string;
+  description: string;
+}
+
+const AccouncementCard: React.FC<NotificationCardProps> = ({
+  title,
+  description,
+}) => (
+  <div className="w-[22vw] h-[130px] bg-[#F6F6FB] mt-5 rounded-md flex flex-col p-4">
+    <h2 className={`text-sm text-[#5A67BA] ${PoppinsFontBold.className}`}>
+      {title}
+    </h2>
+    <h2
+      className={`text-sm text-[#5A67BA] mt-5 ${PoppinsFontMedium.className}`}
+    >
+      {description}
+    </h2>
+  </div>
+);
+
 const menuItems = [
   {
     label: "Dashboard",
