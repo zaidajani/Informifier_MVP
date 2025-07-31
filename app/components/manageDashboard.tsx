@@ -1,5 +1,6 @@
+"use client";
+
 import { Poppins } from "next/font/google";
-import { TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { ResponsiveContainer } from "recharts";
 
@@ -10,28 +11,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-export const description = "A simple area chart";
-
-const chartData = [
-  { month: "12 Jun", desktop: 7 },
-  { month: "17 Jun", desktop: 9 },
-  { month: "22 Jun", desktop: 5 },
-  { month: "27 Jun", desktop: 6 },
-  { month: "01 Jul", desktop: 9 },
-  { month: "07 Jul", desktop: 11 },
-  { month: "12 Jul", desktop: 5 },
-];
-
-const chartConfig = {
-  desktop: {
-    label: "Events",
-    color: "var(--chart-1)",
-  },
-} satisfies ChartConfig;
-
 const PoppinsFontBold = Poppins({ weight: "700", subsets: ["latin"] });
 const PoppinsFontMedium = Poppins({ weight: "400", subsets: ["latin"] });
-const PoppinsFontRegular = Poppins({ weight: "500", subsets: ["latin"] });
 
 const ArrowSVG = (
   <svg
@@ -48,68 +29,68 @@ const ArrowSVG = (
   </svg>
 );
 
-const ManageDashboard = () => {
+type Metric = {
+  label: string;
+  value: string | number;
+};
+
+type ManageDashboardProps = {
+  description: string;
+  metrics: Metric[];
+  chartTitle: string;
+  chartData: any[];
+  chartConfig: ChartConfig;
+};
+
+const ManageDashboard = ({
+  description,
+  metrics,
+  chartTitle,
+  chartData,
+  chartConfig,
+}: ManageDashboardProps) => {
   return (
     <>
       <p
         className={`text-sm mt-15 text-[#1C297A] w-[30vw] ${PoppinsFontMedium.className}`}
       >
-        Informifier is a tool meant for SaaS owners to instantly send them
-        notifications via WhatsApp, Discord or Email.
+        {description}
       </p>
 
       <div className="w-full max-w-2xl mx-auto mt-16 text-center">
         <div className="flex justify-between mt-10">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-[10vw] h-[60px] bg-[#EFEFEF] rounded-md flex items-center justify-center text-2xl text-[#5A67BA]">
-              56
+          {metrics.map((metric, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center gap-3 cursor-pointer"
+            >
+              <div className="w-[10vw] h-[60px] bg-[#EFEFEF] rounded-md flex items-center justify-center text-2xl text-[#5A67BA]">
+                {index === metrics.length - 1 ? ArrowSVG : metric.value}
+              </div>
+              <p className="text-[#5A67BA] text-sm leading-tight text-center">
+                {metric.label.split("\n").map((line, idx) => (
+                  <span key={idx}>
+                    {line}
+                    <br />
+                  </span>
+                ))}
+              </p>
             </div>
-            <p className="text-[#5A67BA] text-sm leading-tight text-center">
-              Events
-              <br />
-              Occurred
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-[10vw] h-[60px] bg-[#EFEFEF] rounded-md flex items-center justify-center text-2xl text-[#5A67BA]">
-              3
-            </div>
-            <p className="text-[#5A67BA] text-sm leading-tight text-center">
-              Total
-              <br />
-              Events
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center gap-3 cursor-pointer">
-            <div className="w-[10vw] h-[60px] bg-[#EFEFEF] rounded-md flex items-center justify-center">
-              {ArrowSVG}
-            </div>
-            <p className="text-[#5A67BA] text-sm leading-tight text-center">
-              Search
-              <br />
-              Docs
-            </p>
-          </div>
+          ))}
         </div>
 
-        {/* Chart directly without Card */}
         <div className="mt-16">
           <p
             className={`text-sm mb-10 mt-10 text-[#1C297A] text-left ${PoppinsFontMedium.className}`}
           >
-            Occurred events (Last 30 days)
+            {chartTitle}
           </p>
 
           <ChartContainer config={chartConfig}>
             <AreaChart
               accessibilityLayer
               data={chartData}
-              margin={{
-                left: 12,
-                right: 12,
-              }}
+              margin={{ left: 12, right: 12 }}
             >
               <CartesianGrid vertical={false} />
               <XAxis
@@ -117,7 +98,7 @@ const ManageDashboard = () => {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={0}
-                angle={-25} // rotate labels slightly
+                angle={-25}
                 textAnchor="end"
               />
               <ChartTooltip
@@ -127,10 +108,10 @@ const ManageDashboard = () => {
               <Area
                 dataKey="desktop"
                 type="natural"
-                fill="#C3C8EC" // ✅ Custom fill color
+                fill="#C3C8EC"
                 fillOpacity={0.5}
-                stroke="#5B6AC7" // ✅ Custom outline (stroke) color
-                strokeWidth={2} // ✅ Optional: make the outline a bit bolder
+                stroke="#5B6AC7"
+                strokeWidth={2}
               />
             </AreaChart>
           </ChartContainer>

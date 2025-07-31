@@ -6,7 +6,7 @@ import { useAuth, useUser } from "@clerk/nextjs";
 import { Poppins } from "next/font/google";
 import { HexColorPicker } from "react-colorful";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, Fragment, useRef } from "react";
+import { useEffect, useState, Fragment, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation"; // ✅ NEW
 import ManageDashboard from "../components/manageDashboard";
 import {
@@ -24,6 +24,31 @@ import {
 const PoppinsFontBold = Poppins({ weight: "700", subsets: ["latin"] });
 const PoppinsFontMedium = Poppins({ weight: "400", subsets: ["latin"] });
 const PoppinsFontRegular = Poppins({ weight: "500", subsets: ["latin"] });
+
+import { ChartConfig } from "@/components/ui/chart";
+
+const dashboardMetrics = [
+  { label: "Events\nOccurred", value: 56 },
+  { label: "Total\nEvents", value: 3 },
+  { label: "Search\nDocs", value: "" }, // Last metric is the icon
+];
+
+const dashboardChartData = [
+  { month: "12 Jun", desktop: 7 },
+  { month: "17 Jun", desktop: 9 },
+  { month: "22 Jun", desktop: 5 },
+  { month: "27 Jun", desktop: 6 },
+  { month: "01 Jul", desktop: 9 },
+  { month: "07 Jul", desktop: 11 },
+  { month: "12 Jul", desktop: 5 },
+];
+
+const dashboardChartConfig: ChartConfig = {
+  desktop: {
+    label: "Events",
+    color: "var(--chart-1)",
+  },
+};
 
 const menuItems = [
   {
@@ -65,6 +90,9 @@ function Dashboard() {
   >([]);
   const [newSelect, setNewSelect] = useState(false);
   const [eventName, setEventName] = useState("");
+  const [dashboardData, setDashboardData] = useState<{
+    eventOccurred: any[];
+  } | null>(null);
   const [description, setDescription] = useState("");
   const [service, setService] = useState("");
   const [color, setColor] = useState("#6071D4");
@@ -119,6 +147,41 @@ function Dashboard() {
       console.error("Error fetching events data:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchAllEvents = async () => {
+      if (!selected?._id || !user?.id) return;
+
+      try {
+        const token = await getToken();
+
+        const dashRes = await fetch(
+          `/api/projects/events/${selected._id}/${user.id}/getAllEvents`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log("dashRes status:", dashRes.status);
+        const dashData = await dashRes.json();
+        console.log("dashRes data:", dashData);
+        setDashboardData(dashData);
+
+        if (!dashRes.ok) {
+          console.error("Failed to get all events:", dashRes.status, dashData);
+          return;
+        }
+      } catch (error) {
+        console.error("Error fetching all events:", error);
+      }
+    };
+
+    fetchAllEvents();
+  }, [selected, user, getToken]);
 
   useEffect(() => {
     if (selected?._id) {
@@ -185,6 +248,23 @@ function Dashboard() {
     submit();
   };
 
+  const metrics = useMemo(() => {
+    return [
+      {
+        label: "Events\nOccurred",
+        value: dashboardData?.eventOccurred?.length ?? 0,
+      },
+      {
+        label: "Total\nProjects",
+        value: arrayData?.length ?? 0,
+      },
+      {
+        label: "Search\nDocs",
+        value: "", // Update when you have actual search doc data
+      },
+    ];
+  }, [selected, dashboardData, arrayData]);
+
   return (
     <>
       <div className="absolute z-2 min-w-screen">
@@ -237,7 +317,16 @@ function Dashboard() {
                 {selected?.name}
               </span>
             </h2>
-            <ManageDashboard />
+            {dashboardData && selected && (
+              <ManageDashboard
+                key={selected._id} // ✅ Force re-render on project change
+                description="Informifier is a tool meant for SaaS owners to instantly send them notifications via WhatsApp, Discord or Email."
+                metrics={metrics}
+                chartTitle="Occurred events (Last 30 days)"
+                chartData={dashboardChartData}
+                chartConfig={dashboardChartConfig}
+              />
+            )}
             <div className="h-30"></div>
           </div>
         </div>
