@@ -90,6 +90,7 @@ function Dashboard() {
   >([]);
   const [newSelect, setNewSelect] = useState(false);
   const [eventName, setEventName] = useState("");
+  const [metricState, setMetricState] = useState([{}]);
   const [dashboardData, setDashboardData] = useState<{
     eventOccurred: any[];
   } | null>(null);
@@ -171,6 +172,21 @@ function Dashboard() {
         console.log("dashRes data:", dashData);
         setDashboardData(dashData);
 
+        setMetricState([
+          {
+            label: "Events\nOccurred",
+            value: dashData?.eventOccurred?.length ?? 0,
+          },
+          {
+            label: "Total\nProjects",
+            value: arrayData?.length ?? 0,
+          },
+          {
+            label: "Search\nDocs",
+            value: "", // Update when you have actual search doc data
+          },
+        ]);
+
         if (!dashRes.ok) {
           console.error("Failed to get all events:", dashRes.status, dashData);
           return;
@@ -248,23 +264,6 @@ function Dashboard() {
     submit();
   };
 
-  const metrics = useMemo(() => {
-    return [
-      {
-        label: "Events\nOccurred",
-        value: dashboardData?.eventOccurred?.length ?? 0,
-      },
-      {
-        label: "Total\nProjects",
-        value: arrayData?.length ?? 0,
-      },
-      {
-        label: "Search\nDocs",
-        value: "", // Update when you have actual search doc data
-      },
-    ];
-  }, [selected, dashboardData, arrayData]);
-
   return (
     <>
       <div className="absolute z-2 min-w-screen">
@@ -321,7 +320,7 @@ function Dashboard() {
               <ManageDashboard
                 key={selected._id} // ✅ Force re-render on project change
                 description="Informifier is a tool meant for SaaS owners to instantly send them notifications via WhatsApp, Discord or Email."
-                metrics={metrics}
+                metrics={metricState}
                 chartTitle="Occurred events (Last 30 days)"
                 chartData={dashboardChartData}
                 chartConfig={dashboardChartConfig}
