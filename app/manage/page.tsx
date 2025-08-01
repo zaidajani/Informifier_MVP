@@ -321,8 +321,38 @@ function Dashboard() {
                 key={selected._id} // ✅ Force re-render on project change
                 description="Informifier is a tool meant for SaaS owners to instantly send them notifications via WhatsApp, Discord or Email."
                 metrics={metricState}
-                chartTitle="Occurred events (Last 30 days)"
-                chartData={dashboardChartData}
+                chartTitle="Occurred events (lifetime)"
+                chartData={Object.entries(
+                  dashboardData.eventOccurred.reduce(
+                    (
+                      acc: Record<string, { count: number; rawDate: string }>,
+                      curr: any
+                    ) => {
+                      const date = new Date(curr.timestamp);
+                      const day = String(date.getDate()).padStart(2, "0");
+                      const month = date.toLocaleString("en-US", {
+                        month: "short",
+                      });
+                      const key = `${day} ${month}`;
+                      const rawDate = date.toISOString(); // for sorting
+                      acc[key] = acc[key] || { count: 0, rawDate };
+                      acc[key].count += 1;
+                      return acc;
+                    },
+                    {}
+                  )
+                )
+                  .map(([month, { count, rawDate }]) => ({
+                    month,
+                    desktop: count,
+                    rawDate,
+                  }))
+                  .sort(
+                    (a, b) =>
+                      new Date(a.rawDate).getTime() -
+                      new Date(b.rawDate).getTime()
+                  ) // ✅ oldest first
+                  .map(({ rawDate, ...rest }) => rest)}
                 chartConfig={dashboardChartConfig}
               />
             )}
