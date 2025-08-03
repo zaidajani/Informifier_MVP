@@ -90,13 +90,22 @@ function Dashboard() {
   >([]);
   const [newSelect, setNewSelect] = useState(false);
   const [eventName, setEventName] = useState("");
-  const [metricState, setMetricState] = useState([{}]);
   const [dashboardData, setDashboardData] = useState<{
     eventOccurred: any[];
   } | null>(null);
   const [description, setDescription] = useState("");
   const [service, setService] = useState("");
   const [color, setColor] = useState("#6071D4");
+  type Metric = {
+    label: string;
+    value: string | number;
+  };
+
+  const [metricState, setMetricState] = useState<Metric[]>([
+    { label: "Events\nOccurred", value: 0 },
+    { label: "Total\nProjects", value: 0 },
+    { label: "Search\nDocs", value: "" },
+  ]);
 
   const firstRender = useRef(true);
 
@@ -167,9 +176,7 @@ function Dashboard() {
           }
         );
 
-        console.log("dashRes status:", dashRes.status);
         const dashData = await dashRes.json();
-        console.log("dashRes data:", dashData);
         setDashboardData(dashData);
 
         setMetricState([
@@ -183,13 +190,12 @@ function Dashboard() {
           },
           {
             label: "Search\nDocs",
-            value: "", // Update when you have actual search doc data
+            value: "", // placeholder
           },
         ]);
 
         if (!dashRes.ok) {
           console.error("Failed to get all events:", dashRes.status, dashData);
-          return;
         }
       } catch (error) {
         console.error("Error fetching all events:", error);
@@ -197,7 +203,7 @@ function Dashboard() {
     };
 
     fetchAllEvents();
-  }, [selected, user, getToken]);
+  }, [selected, user, getToken, arrayData]);
 
   useEffect(() => {
     if (selected?._id) {
@@ -319,7 +325,7 @@ function Dashboard() {
             {dashboardData && selected && (
               <ManageDashboard
                 key={selected._id} // ✅ Force re-render on project change
-                description="Informifier is a tool meant for SaaS owners to instantly send them notifications via WhatsApp, Discord or Email."
+                description={(selected as any)?.description ?? ""}
                 metrics={metricState}
                 chartTitle="Occurred events (lifetime)"
                 chartData={Object.entries(
